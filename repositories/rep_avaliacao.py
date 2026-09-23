@@ -1,4 +1,6 @@
 from banco.db import conectar
+from models.restaurante import Restaurante
+from models.avaliacoes import Avaliacoes
 
 def tabela_avaliacoes():
     conexao = conectar()
@@ -16,13 +18,13 @@ def tabela_avaliacoes():
     conexao.commit()
     conexao.close()
 
-def criar_avaliacao(id_restaurante, nome_usuario, nota):
+def criar_avaliacao(id_restaurante, avaliacao):
     conexao = conectar()
     cursor = conexao.cursor()
     cursor.execute("""
         INSERT INTO avaliacoes(id_restaurante, nome_usuario, nota)
         VALUES (%s, %s, %s)
-    """, (id_restaurante, nome_usuario, nota))
+    """, (id_restaurante, avaliacao.cliente, avaliacao.nota))
     conexao.commit()
     conexao.close()
 
@@ -36,8 +38,7 @@ def listar_avaliacoes():
         JOIN restaurantes ON avaliacoes.id_restaurante = restaurantes.id
     """)
     avaliacoes = cursor.fetchall()
-    for avaliacao in avaliacoes:
-        print(avaliacao)
     conexao.commit()
     conexao.close()
+    return [Avaliacoes(cliente, nome_usuario, nota) for cliente, nome_usuario, nota in avaliacoes]
 

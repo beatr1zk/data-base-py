@@ -1,4 +1,5 @@
 from banco.db import conectar
+from models.restaurante import Restaurante
 
 def tabela_restaurante():
     conexao = conectar()
@@ -15,13 +16,13 @@ def tabela_restaurante():
     conexao.commit()
     conexao.close()
 
-def criar_restaurante(nome, categoria):
+def criar_restaurante(restaurante):
     conexao = conectar()
     cursor = conexao.cursor()
     cursor.execute("""
         INSERT INTO restaurantes(nome, categoria)
         VALUES (%s, %s)
-    """, (nome, categoria))
+    """, (restaurante.nome, restaurante.categoria))
     conexao.commit()
     conexao.close()
 
@@ -33,7 +34,6 @@ def listar_restaurantes():
         SELECT * FROM restaurantes
     """)
     restaurantes = cursor.fetchall()
-    for restaurante in restaurantes:
-        print(restaurante)
     conexao.commit()
     conexao.close()
+    return [Restaurante(nome,categoria) for nome,categoria in restaurantes]

@@ -1,12 +1,20 @@
-from banco.db import tabela_restaurante, tabela_avaliacoes, criar_restaurante,  criar_avaliacao, listar_restaurantes, listar_avaliacoes
+from models.restaurante import Restaurante
+from repositories.rep_cardapio import criar_item_cardapio, tabela_item_cardapio
+from repositories.rep_restaurante import criar_restaurante, tabela_restaurante, listar_restaurantes
+from repositories.rep_avaliacao import criar_avaliacao, tabela_avaliacoes, listar_avaliacoes
 
 tabela_restaurante()
-tabela_avaliacoes() #Cade esse caraio que não existia
+tabela_avaliacoes() 
+tabela_item_cardapio()
 
-# criar_restaurante("Mada", "Italiana")
-# criar_restaurante("Coconono", "Tropical")
+def main():
+    tabela_item_cardapio()
+    criar_item_cardapio()
 
-# criar_avaliacao(1, "Heron", 4.8)
+criar_restaurante(Restaurante("Mada", "Italiana"))
+criar_restaurante(Restaurante("Coconono", "Tropical"))
+
+criar_avaliacao(1, "Heron", 4.8)
 
 print("\nRestaurantes:")
 listar_restaurantes()
