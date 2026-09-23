@@ -1,4 +1,4 @@
-from db import tabela_restaurante, tabela_avaliacoes, criar_restaurante,  criar_avaliacao, listar_restaurantes, listar_avaliacoes
+from banco.db import tabela_restaurante, tabela_avaliacoes, criar_restaurante,  criar_avaliacao, listar_restaurantes, listar_avaliacoes
 
 tabela_restaurante()
 tabela_avaliacoes() #Cade esse caraio que não existia
