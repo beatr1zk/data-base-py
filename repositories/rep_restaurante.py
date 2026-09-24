@@ -20,9 +20,9 @@ def criar_restaurante(restaurante):
     conexao = conectar()
     cursor = conexao.cursor()
     cursor.execute("""
-        INSERT INTO restaurantes(nome, categoria)
-        VALUES (%s, %s)
-    """, (restaurante.nome, restaurante.categoria))
+        INSERT INTO restaurantes(nome, categoria, localizacao, tipo_comida)
+        VALUES (%s, %s, %s, %s)
+    """, (restaurante.nome, restaurante.categoria, restaurante.localizacao, restaurante.tipo_comida))
     conexao.commit()
     conexao.close()
 

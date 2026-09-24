@@ -1,23 +1,70 @@
-from models.restaurante import Restaurante
-from repositories.rep_cardapio import criar_item_cardapio, tabela_item_cardapio
-from repositories.rep_restaurante import criar_restaurante, tabela_restaurante, listar_restaurantes
-from repositories.rep_avaliacao import criar_avaliacao, tabela_avaliacoes, listar_avaliacoes
+from functools import wraps
+from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from models.crud.create import Usuario
+from repositories import rep_usuario, rep_restaurante, rep_avaliacao, rep_cardapio
 
-tabela_restaurante()
-tabela_avaliacoes() 
-tabela_item_cardapio()
+app = Flask(__name__)
+app.secret_key = 'batata'
 
-def main():
-    tabela_item_cardapio()
-    criar_item_cardapio()
+def login_required(funcao):
+    @wraps(funcao)
+    def verificar(*args, **kwargs):
+        if 'id_usuario' not in session:
+            return redirect(url_for('login'))
+        else:
+            return(*args, *kwargs)
+    return verificar
 
-criar_restaurante(Restaurante("Mada", "Italiana"))
-criar_restaurante(Restaurante("Coconono", "Tropical"))
+@app.route('/cadastro', methods=['GET', 'POST'])
+def cadastro():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        email = request.form['email']
+        senha_hash = generate_password_hash(request.form['senha'])
+        if rep_usuario.buscar_por_email(email) is not None:
+            return render_template('cadastro.html', erro='Este e-mail já está cadastrado.')
+        else:
+            usuario = Usuario(nome, email, senha_hash)
+            rep_usuario.criar_usuario(usuario)
+            return redirect(url_for('login'))
 
-criar_avaliacao(1, "Heron", 4.8)
+    return render_template('cadastro.html')
 
-print("\nRestaurantes:")
-listar_restaurantes()
+@app.route('/login', method=['GET','POST'])
+def login():
+    if request.method == 'POST':
+        email = request['email']
+        senha = request['senha']
 
-print("\nAvaliações:")
-listar_avaliacoes()
+        usuario = rep_usuario.buscar_por_email(email)
+        if usuario and check_password_hash(usuario._senha_hash, senha):
+            session['usuario_id'] = usuario.id_usuario
+            return redirect(url_for('painel'))
+        else:
+            return render_template('login.html', erro='E-mail ou senha inválidos.')
+    else:
+        return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('id_usuario', None)
+    return redirect(url_for('login'))
+
+@app.route('/painel')
+@login_required
+def painel():
+    usuario = rep_usuario.buscar_por_email(session['usuario_id'])
+    return render_template('painel.html', usuario=usuario)
+
+@app.route ('/restaurantes')
+@login_required
+def restaurantes():
+    lista_restaurantes = rep_restaurante.listar_restaurantes()
+    return render_template('restaurante.html', restaurantes=lista_restaurantes)
+
+if __name__ == '__main__':
+    rep_restaurante.tabela_restaurante()
+    rep_avaliacao.tabela_avaliacoes()
+    rep_cardapio.tabela_item_cardapio()
+    rep_usuario.tabela_usuario()
