@@ -36,11 +36,11 @@ def buscar_por_email(email):
     conexao = conectar()
     cursor = conexao.cursor()
     cursor.execute("""
-    SELECT nome, email, senha_hash FROM usuario 
-    WHERE email = %s
-    """, (email))
+    SELECT id, nome_usuario, email_usuario, senha_hash FROM usuarios 
+    WHERE email_usuario = %s
+    """, (email,))
 
-    usuario = cursor.fetchall()
+    usuario = cursor.fetchone()
     conexao.close()
 
     if usuario is None:
@@ -50,4 +50,23 @@ def buscar_por_email(email):
         usuario = Usuario(nome, email, senha_hash)
         usuario.id = id_usuario
         return usuario
+
+def buscar_por_id(id_usuario):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    cursor.execute("""
+    SELECT * FROM usuarios WHERE id = %s
+    """, (id_usuario,))
+
+    usuario = cursor.fetchone()
+    conexao.close()
+
+    if usuario is None:
+        return None
+    else:
+        id_usuario, nome, email, senha_hash = usuario
+        usuario = Usuario(nome, email, senha_hash)
+        usuario.id = id_usuario
+        return usuario
+
         

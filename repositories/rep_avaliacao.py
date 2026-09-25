@@ -40,3 +40,14 @@ def listar_avaliacoes():
     conexao.commit()
     conexao.close()
     return [Avaliacoes(cliente, nome_usuario, nota) for cliente, nome_usuario, nota in avaliacoes]
+
+def listar_por_restaurante(id):
+    conexao = conectar()
+    cursor = conexao.cursor()
+    cursor.execute("SELECT * FROM avaliacoes WHERE id_restaurante = %s", (id,))
+    resultado = cursor.fetchall()
+    conexao.close()
+    avaliacoes = []
+    for nome, nota in resultado:
+        avaliacoes.append(Avaliacoes(nome, float(nota)))
+    return avaliacoes

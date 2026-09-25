@@ -10,10 +10,10 @@ app.secret_key = 'batata'
 def login_required(funcao):
     @wraps(funcao)
     def verificar(*args, **kwargs):
-        if 'id_usuario' not in session:
+        if 'usuario_id' not in session:
             return redirect(url_for('login'))
         else:
-            return(*args, *kwargs)
+            return funcao(*args, **kwargs)
     return verificar
 
 @app.route('/cadastro', methods=['GET', 'POST'])
@@ -34,12 +34,12 @@ def cadastro():
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
-        email = request['email']
-        senha = request['senha']
+        email = request.form['email']
+        senha = request.form['senha']
 
         usuario = rep_usuario.buscar_por_email(email)
         if usuario and check_password_hash(usuario._senha_hash, senha):
-            session['usuario_id'] = usuario.id_usuario
+            session['usuario_id'] = usuario.id
             return redirect(url_for('painel'))
         else:
             return render_template('login.html', erro='E-mail ou senha inválidos.')
@@ -48,13 +48,13 @@ def login():
 
 @app.route('/logout')
 def logout():
-    session.pop('id_usuario', None)
+    session.pop('usuario_id', None)
     return redirect(url_for('login'))
 
 @app.route('/painel')
 @login_required
 def painel():
-    usuario = rep_usuario.buscar_por_email(session['usuario_id'])
+    usuario = rep_usuario.buscar_por_id(session['usuario_id'])
     return render_template('painel.html', usuario=usuario)
 
 @app.route ('/restaurantes')
@@ -68,3 +68,4 @@ if __name__ == '__main__':
     rep_avaliacao.tabela_avaliacoes()
     rep_cardapio.tabela_item_cardapio()
     rep_usuario.tabela_usuario()
+    app.run(debug = True)
