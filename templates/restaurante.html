@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Restaurantes - Sabor Express{% endblock %}
+
+{% block conteudo %}
+    <h2>Restaurantes Cadastrados</h2>
+
+    {% if restaurantes %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Ativo</th>
+                    <th>Média de Avaliações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for restaurante in restaurantes %}
+                    <tr>
+                        <td>{{ restaurante.nome }}</td>
+                        <td>{{ restaurante.categoria }}</td>
+                        <td>{{ restaurante.ativo }}</td>
+                        <td>{{ restaurante.media_avaliacoes }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum restaurante cadastrado ainda.</p>
+    {% endif %}
+{% endblock %}
+ 

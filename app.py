@@ -31,7 +31,7 @@ def cadastro():
 
     return render_template('cadastro.html')
 
-@app.route('/login', method=['GET','POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
         email = request['email']
